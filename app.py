@@ -5,6 +5,13 @@ import nltk
 
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+import os
+import joblib
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(BASE_DIR, "fake_news_model.pkl")
+
+model = joblib.load(model_path)
 
 # Download NLTK data
 nltk.download('stopwords')
