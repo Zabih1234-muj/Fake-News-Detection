@@ -2,30 +2,34 @@ import streamlit as st
 import joblib
 import re
 import nltk
+import os
 
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import os
-import joblib
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(BASE_DIR, "fake_news_model.pkl")
-
-model = joblib.load(model_path)
-
-# Download NLTK data
+# -------------------------
+# NLTK setup
+# -------------------------
 nltk.download('stopwords')
 nltk.download('wordnet')
 
-# Load model and vectorizer
-model = joblib.load("fake_news_model.pkl")
-vectorizer = joblib.load("tfidf_vectorizer.pkl")
-
-# NLP setup
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 
+# -------------------------
+# Safe file loading (IMPORTANT)
+# -------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+model_path = os.path.join(BASE_DIR, "fake_news_model.pkl")
+vectorizer_path = os.path.join(BASE_DIR, "tfidf_vectorizer.pkl")
+
+model = joblib.load(model_path)
+vectorizer = joblib.load(vectorizer_path)
+
+# -------------------------
 # Clean text function
+# -------------------------
 def clean_text(text):
     text = str(text).lower()
     text = re.sub(r'[^a-zA-Z]', ' ', text)
@@ -40,7 +44,9 @@ def clean_text(text):
 
     return " ".join(words)
 
+# -------------------------
 # Streamlit UI
+# -------------------------
 st.set_page_config(page_title="Fake News Detection")
 
 st.title("🧠 Fake News Detection System")
@@ -53,7 +59,6 @@ if st.button("Predict"):
         st.warning("Please enter news text.")
     else:
         cleaned = clean_text(news)
-
         vector = vectorizer.transform([cleaned])
 
         prediction = model.predict(vector)
